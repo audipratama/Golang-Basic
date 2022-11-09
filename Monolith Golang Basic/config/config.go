@@ -47,11 +47,11 @@ func NewModuleConfig() *Config {
 
 //parseConfig will parse module config
 func parseConfig(cfg interface{}, module string, path string) error {
-	environ := os.Getenv("ENV")
-	if environ == "" {
-		environ = "development"
+	environment := os.Getenv("ENV")
+	if environment == "" {
+		environment = "development"
 	}
-	return readModuleConfig(cfg, environ, module, path)
+	return readModuleConfig(cfg, environment, module, path)
 }
 
 //readModuleConfig will read config from .ini file

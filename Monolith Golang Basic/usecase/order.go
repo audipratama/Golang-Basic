@@ -8,17 +8,23 @@ import (
 )
 
 type OrderRequest struct {
-	GoodsName string `json:"goods_name"`
+	GoodsName       string `json:"goods_name"`
+	ReceiverName    string `json:"receiver_name"`
+	ReceiverAddress string `json:"receiver_address"`
+	ShipperID       int32  `json:"shipper_id"`
 }
 
 type OrderResponse struct {
-	Id        int64  `json:"id"`
-	GoodsName string `json:"goods_name"`
+	Id              int64  `json:"id"`
+	GoodsName       string `json:"goods_name"`
+	ReceiverName    string `json:"receiver_name"`
+	ReceiverAddress string `json:"receiver_address"`
+	ShipperID       int32  `json:"shipper_id"`
 }
 
 func (u usecase) GetOrder(context *gin.Context) {
 	id := context.Param("id")
-	orderId , err := strconv.ParseInt(id, 0, 64)
+	orderId, err := strconv.ParseInt(id, 0, 64)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{
 			"error":   err.Error(),
@@ -39,7 +45,7 @@ func (u usecase) GetOrder(context *gin.Context) {
 		context.Abort()
 		return
 	}
-	if len(orders) < 1{
+	if len(orders) < 1 {
 		context.JSON(http.StatusNotFound, gin.H{
 			"message": "No Data Found",
 		})
@@ -50,8 +56,12 @@ func (u usecase) GetOrder(context *gin.Context) {
 
 	context.JSON(http.StatusOK, gin.H{
 		"data": OrderResponse{
-			Id:        orders[0].Id,
-			GoodsName: orders[0].GoodsName},
+			Id:              orders[0].Id,
+			GoodsName:       orders[0].GoodsName,
+			ReceiverName:    orders[0].ReceiverName,
+			ReceiverAddress: orders[0].ReceiverAddress,
+			ShipperID:       orders[0].ShipperID,
+		},
 		"message": "Get Order Success",
 	})
 }
@@ -69,7 +79,10 @@ func (u usecase) CreateOrder(context *gin.Context) {
 	}
 
 	order := model.Orders{
-		GoodsName: request.GoodsName,
+		GoodsName:       request.GoodsName,
+		ReceiverName:    request.ReceiverName,
+		ReceiverAddress: request.ReceiverAddress,
+		ShipperID:       request.ShipperID,
 	}
 
 	result, err := u.orderRepo.Insert(context, order)
@@ -85,8 +98,12 @@ func (u usecase) CreateOrder(context *gin.Context) {
 
 	context.JSON(http.StatusCreated, gin.H{
 		"data": OrderResponse{
-			Id:        result,
-			GoodsName: request.GoodsName},
+			Id:              result,
+			GoodsName:       request.GoodsName,
+			ReceiverName:    request.ReceiverName,
+			ReceiverAddress: request.ReceiverAddress,
+			ShipperID:       request.ShipperID,
+		},
 		"message": "Create Order Success",
 	})
 }
