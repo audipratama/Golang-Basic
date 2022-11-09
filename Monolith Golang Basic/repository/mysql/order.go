@@ -20,15 +20,26 @@ func NewOrderRepo(dbConfig *sqlx.DB) _interface.OrderRepository{
 	return db
 }
 
+func NewMock(dbConfig *sql.DB) *dbRepo {
+	db := &dbRepo{
+		db: sqlx.NewDb(dbConfig,"sqlmock"),
+	}
+	return db
+}
+
 func (repository *dbRepo) Insert(ctx context.Context, order model.Orders) (int64, error) {
 	tx, err := repository.db.Begin()
 	if err != nil {
 		panic(err)
 	}
 
-	sql := "INSERT INTO orders(goodsName) VALUES(?)"
+	sql := "INSERT INTO orders(goods_name,receiver_name,receiver_address,shipper_id) VALUES(?,?,?,?)"
 	result, err := tx.ExecContext(ctx, sql,
-		order.GoodsName)
+		order.GoodsName,
+		order.ReceiverName,
+		order.ReceiverAddress,
+		order.ShipperID,
+	)
 	if err != nil {
 		tx.Rollback()
 		panic(err)
@@ -45,7 +56,7 @@ func (repository *dbRepo) Insert(ctx context.Context, order model.Orders) (int64
 }
 
 func (repository *dbRepo) GetOrdersByIDs(ctx context.Context, id []int64) ([]model.Orders, error) {
-	sql := "SELECT id, goodsName FROM orders WHERE id IN (?)"
+	sql := "SELECT id, goods_name,receiver_name,receiver_address,shipper_id FROM orders WHERE id IN (?)"
 	query, args, err := sqlx.In(sql, id)
 	if err != nil {
 		return nil, err
