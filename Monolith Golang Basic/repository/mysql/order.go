@@ -33,7 +33,7 @@ func (repository *dbRepo) Insert(ctx context.Context, order model.Orders) (int64
 		panic(err)
 	}
 
-	sql := "INSERT INTO orders(goods_name,receiver_name,receiver_address,shipper_id) VALUES(?,?,?,?)"
+	sql := `INSERT INTO orders(goods_name,receiver_name,receiver_address,shipper_id) VALUES(?,?,?,?)`
 	result, err := tx.ExecContext(ctx, sql,
 		order.GoodsName,
 		order.ReceiverName,
