@@ -42,17 +42,40 @@ func (repository *dbRepo) Insert(ctx context.Context, order model.Orders) (int64
 	)
 	if err != nil {
 		tx.Rollback()
-		panic(err)
+		return 0, err
 	}
 	insertId, err := result.LastInsertId()
 	if err != nil {
 		tx.Rollback()
-		panic(err)
+		return 0, err
 	}
 
 	tx.Commit()
 	fmt.Println("Last InsertId:", insertId)
 	return insertId, nil
+}
+
+func (repository *dbRepo) UpdateOrderByID(ctx context.Context, order model.Orders) (model.Orders, error){
+	tx, err := repository.db.Begin()
+	if err != nil {
+		panic(err)
+	}
+
+	sql := `UPDATE orders SET goods_name= ? , receiver_name = ? , receiver_address = ?, shipper_id = ? WHERE id= ?`
+	_ , err = tx.ExecContext(ctx, sql,
+		order.GoodsName,
+		order.ReceiverName,
+		order.ReceiverAddress,
+		order.ShipperID,
+		order.Id,
+	)
+	if err != nil {
+		tx.Rollback()
+		return model.Orders{}, err
+	}
+
+	tx.Commit()
+	return order, nil
 }
 
 func (repository *dbRepo) GetOrdersByIDs(ctx context.Context, id []int64) ([]model.Orders, error) {
@@ -67,27 +90,4 @@ func (repository *dbRepo) GetOrdersByIDs(ctx context.Context, id []int64) ([]mod
 	err = repository.db.SelectContext(ctx, &orders, query, args...)
 
 	return orders, err
-}
-
-func GetOrderById(db *sql.DB, id int) {
-	ctx := context.Background()
-
-	sql := "SELECT id, goodsName FROM orders WHERE id = ?"
-	rows, err := db.QueryContext(ctx, sql, id)
-	if err != nil {
-		panic(err)
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var id, goodsName string
-		err = rows.Scan(&id, &goodsName)
-		if err != nil {
-			panic(err)
-		}
-		fmt.Println("Id " + id)
-		fmt.Println("GoodsName " + goodsName)
-	}
-
-	fmt.Println("Success")
 }
