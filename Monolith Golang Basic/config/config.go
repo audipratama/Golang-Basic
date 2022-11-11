@@ -51,6 +51,11 @@ func parseConfig(cfg interface{}, module string, path string) error {
 	if environment == "" {
 		environment = "development"
 	}
+
+	if confPaths == "test"{
+		return nil
+	}
+
 	return readModuleConfig(cfg, environment, module, path)
 }
 

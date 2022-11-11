@@ -64,3 +64,18 @@ func (mr *MockOrderRepositoryMockRecorder) Insert(ctx, order interface{}) *gomoc
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockOrderRepository)(nil).Insert), ctx, order)
 }
+
+// UpdateOrderByID mocks base method.
+func (m *MockOrderRepository) UpdateOrderByID(ctx context.Context, order model.Orders) (model.Orders, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateOrderByID", ctx, order)
+	ret0, _ := ret[0].(model.Orders)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateOrderByID indicates an expected call of UpdateOrderByID.
+func (mr *MockOrderRepositoryMockRecorder) UpdateOrderByID(ctx, order interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateOrderByID", reflect.TypeOf((*MockOrderRepository)(nil).UpdateOrderByID), ctx, order)
+}
